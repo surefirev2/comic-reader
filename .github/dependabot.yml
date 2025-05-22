@@ -1,0 +1,26 @@
+---
+version: 2
+updates:
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+  groups:
+    patch:
+      applies-to: version-updates
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+- package-ecosystem: "npm"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  groups:
+    patch:
+      applies-to: version-updates
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+# Minor and major updates will not be grouped and will each get their own PR by default

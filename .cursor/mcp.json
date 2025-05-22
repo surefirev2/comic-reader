@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+      "github": {
+        "command": "bash",
+        "args": [
+          "./mcp_scripts/github-mcp.sh"
+        ]
+      },
+      "task-master-ai": {
+        "command": "bash",
+        "args": [
+          "./mcp_scripts/task-master-ai.sh"
+        ]
+      }
+    }
+  }
