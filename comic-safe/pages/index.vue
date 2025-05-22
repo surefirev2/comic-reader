@@ -29,7 +29,7 @@ const searched = ref(false)
 
 function toLocalComic(url) {
   const match = url.match(/\/Comic\/([^/]+)/)
-  return match ? `/comic/${match[1]}` : '/comic/unknown'
+  return match ? `/comics/${match[1]}` : '/comics/unknown'
 }
 
 async function search() {

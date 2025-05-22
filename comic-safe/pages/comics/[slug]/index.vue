@@ -19,7 +19,7 @@ const slug = route.params.slug
 
 const { data: issues, pending, error } = await useAsyncData(
   `issues-${slug}`,
-  () => $fetch(`/api/issues/${slug}`)
+  () => $fetch(`/api/comics/${slug}`)
 )
 </script>
 
