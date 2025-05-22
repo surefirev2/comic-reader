@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     // Scroll to the bottom of the page
     await page.evaluate(async () => {
       window.scrollTo(0, document.body.scrollHeight)
-      await new Promise(resolve => setTimeout(resolve, 5000))
+      await new Promise(resolve => setTimeout(resolve, 2000))
     })
 
     // Take a screenshot for debugging
@@ -38,9 +38,11 @@ export default defineEventHandler(async (event) => {
     const html = await page.content()
     const htmlSample = html.slice(0, 2000)
 
-    // Parse all <img> tags in the DOM
+    // Parse all <img> tags in the DOM and filter for comic pages
     const imageUrls = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('img')).map(img => img.src)
+      return Array.from(document.querySelectorAll('img'))
+        .map(img => img.src)
+        .filter(src => src.includes('2.bp.blogspot.com'))
     })
 
     return { url, imageUrls, count: imageUrls.length, htmlSample, screenshot }
