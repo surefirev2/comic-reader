@@ -1,0 +1,192 @@
+# Overview
+
+**ComicSafe** is a client-only Progressive Web App (PWA) that enables children and casual readers to safely browse, read, and track comic reading progress offline. Unlike existing comic platforms that are ad-filled and unsafe for kids, ComicSafe runs entirely in the browser without a backend, offering an installable, private, and offline-first comic reader.
+
+**Key Differentiator:** All crawling, caching, search indexing, and progress tracking are executed *on-device* using modern browser APIs. There is **no backend infrastructure**—only static hosting on GitHub Pages.
+
+**Target Audience:**
+
+* Children aged 7–14
+* Parents seeking a safe comic reader
+* Casual readers who want clean, offline-friendly reading
+
+# Core Features
+
+### 1. **Client-Side Comic Reader**
+
+* **What it does:** Lets users read comics in a swipeable, mobile-optimized interface.
+* **Why it matters:** Provides the core value—offline-safe, ad-free comic reading.
+* **How it works:** Renders image URLs scraped on-device into a vertical or horizontal scrollable view.
+
+### 2. **On-Device Web Crawler**
+
+* **What it does:** Scrapes and parses public comic pages from ReadComicOnline.to directly in the browser.
+* **Why it matters:** Enables ComicSafe to legally and technically operate without a server.
+* **How it works:** Uses Cheerio or DOMParser in a sandboxed iframe/worker to fetch, parse, and extract comic metadata and page images.
+
+### 3. **Fuzzy Search and Safe Filter (Local Index)**
+
+* **What it does:** Lets users search by comic title with typo-tolerance.
+* **Why it matters:** Supports fast discovery without server queries or logins.
+* **How it works:** Uses Fuse.js to build an in-memory index of scraped comic titles.
+
+### 4. **Offline Support and Storage**
+
+* **What it does:** Stores comics and reading progress locally.
+* **Why it matters:** Makes the PWA reliable without connectivity or accounts.
+* **How it works:** Uses IndexedDB and Cache API to store images, metadata, and progress per title.
+
+### 5. **Installable PWA**
+
+* **What it does:** Enables full-screen app-like behavior with home screen access.
+* **Why it matters:** Promotes return usage and improves performance.
+* **How it works:** Uses service workers and a manifest.json via Nuxt 3 PWA module.
+
+# User Experience
+
+### User Personas
+
+* **Leo (10yo kid):** Wants to read comics on a tablet without adult content or popups.
+* **Maya (Parent):** Wants a safe, installable, offline-friendly reading tool for her children.
+* **Alex (Comic Enthusiast):** Uses it casually on mobile for quick reads during commutes.
+
+### Key User Flows
+
+1. **First Load > Search/Browse > Select Comic > Crawl + Read > Progress Saved**
+2. **Return Visit > Resume Reading Offline**
+3. **Read Comic > Install PWA > Use from Home Screen**
+
+### UI/UX Considerations
+
+* Friendly, safe visuals for children
+* Zero-config: no login, no setup
+* Graceful handling of errors (e.g., crawl failed, site down)
+* Smooth transitions and preloaders for comic crawling
+* Touch gestures for page navigation
+
+</context>
+
+<PRD>
+
+# Technical Architecture
+
+### System Components (Client-Only)
+
+| Component         | Responsibility                                | Tech Stack                    |
+| ----------------- | --------------------------------------------- | ----------------------------- |
+| UI/UX Frontend    | Reader UI, navigation, search, error handling | Nuxt 3 + Tailwind             |
+| On-Device Crawler | Fetch comic pages and parse images            | DOMParser / Cheerio (bundled) |
+| Fuzzy Search      | Title search from on-device index             | Fuse.js                       |
+| Storage Layer     | Persist images + progress                     | IndexedDB + Cache API         |
+| PWA Shell         | Installable experience, offline access        | Nuxt 3 PWA Module             |
+
+### Data Models
+
+```ts
+Comic {
+  id: string
+  title: string
+  chapters: Chapter[]
+}
+
+Chapter {
+  id: string
+  title: string
+  pages: string[] // Extracted image URLs
+}
+
+ReadingProgress {
+  comicId: string
+  chapterId: string
+  lastPage: number
+}
+```
+
+### Hosting / Infrastructure
+
+* **Static Hosting Only:** GitHub Pages
+* **All Runtime Processing:** Performed in-browser at runtime
+* **No Backend:** No server, DB, or hosted API
+
+# Development Roadmap
+
+### MVP Scope
+
+* Touch-friendly comic reader (vertical + swipe)
+* IndexedDB + Cache API for page/image storage
+* On-device crawler for public comic page parsing
+* Fuzzy search with title filter
+* Installable PWA with offline mode
+* Basic error UI (crawl failed, page load failed)
+* Safe, ad-free visual styling
+
+### Future Enhancements
+
+* Bookmarking + "Recently Read"
+* More advanced genre filtering (from crawled metadata)
+* Tabbed browsing / split view (desktop)
+* Comic preloading in background
+* LRU cache eviction strategy for storage limits
+
+# Logical Dependency Chain
+
+1. **Comic Reader UI (static content)**
+
+   * Build reader shell and local file reader first for testability
+
+2. **On-Device Crawler MVP**
+
+   * Load, parse, and extract image URLs from known sample comic URL
+   * Build from pre-defined selectors
+
+3. **Progress Tracking + IndexedDB**
+
+   * Save page number per comic
+
+4. **Fuzzy Search Index**
+
+   * Enable in-memory search from locally crawled titles
+
+5. **Offline & Install Support**
+
+   * Enable service worker and install prompt
+   * Ensure read comics are fully cached
+
+6. **UX Polish + Safe Theme**
+
+   * Finalize UI/UX and mobile optimizations
+
+# Risks and Mitigations
+
+### Browser Limitations
+
+* **Risk:** Cheerio may not run reliably in all browsers or CSP may block crawling
+* **Mitigation:** Use DOMParser fallback with sandboxed iframe and robust error handling
+
+### Crawl Failures
+
+* **Risk:** Source website changes DOM or blocks traffic
+* **Mitigation:** Use generic selectors, notify user when crawl fails, allow manual retry
+
+### Storage Quotas
+
+* **Risk:** Browsers limit IndexedDB space, affecting offline access
+* **Mitigation:** Implement LRU cleanup; warn users near quota
+
+### GitHub Pages Limitations
+
+* **Risk:** No dynamic server means no proxy or preprocessing
+* **Mitigation:** All dependencies and libraries must be bundled; test for CORS and CSP issues
+
+# Appendix
+
+### Research Notes
+
+* IndexedDB supports >100MB per origin in most modern browsers
+* ReadComicOnline.to is parseable via DOM inspection
+* Cheerio can be bundled with Nuxt 3 if tree-shaken and sandboxed properly
+
+### Dev Tools / Stack
+
+* Nuxt 3, Tailwind CSS, IndexedDB, Fuse.js, DOMParser, Cheerio (bundled), Vite
+* GitHub Pages + GitHub Actions for deploy
