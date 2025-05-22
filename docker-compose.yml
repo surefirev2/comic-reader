@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  nuxtapp:
+    build:
+      context: ./comic-safe
+      dockerfile: Dockerfile
+    container_name: comic-safe-dev-test
+    image: comic-safe-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./comic-safe:/app
+      - nuxt_node_modules:/app/node_modules
+    environment: {}
+    working_dir: /app
+    command: npx nuxt dev
+volumes:
+  nuxt_node_modules:

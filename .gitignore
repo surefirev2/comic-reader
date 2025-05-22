@@ -1,12 +1,19 @@
-.env
-mcp_scripts/*.sh
 node_modules/
+.nuxt/
+.output/
+.env
+npm-debug.log
+comic-safe/node_modules/
+comic-safe/.nuxt/
+comic-safe/.output/
+comic-safe/.env
+mcp_scripts/task-master-ai.sh
+mcp_scripts/github-mcp.sh
 
 # Added by Claude Task Master
 # Logs
 logs
 *.log
-npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 dev-debug.log
