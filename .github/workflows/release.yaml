@@ -55,14 +55,15 @@ jobs:
             type=semver,pattern={{version}},value=${{ needs.release.outputs.release-git-tag }}
             type=sha
             type=ref,event=branch
-      - name: Build and push Docker image
+      - name: Build Docker image using Makefile
+        run: |
+          make build/prod
+      - name: Retag and push Docker image
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
         run: |
           IMAGE=ghcr.io/${{ github.repository }}
-          docker buildx build \
-            --platform linux/amd64 \
-            --tag $IMAGE:${{ needs.release.outputs.release-git-tag }} \
-            $(echo $TAGS | xargs -n 1 echo --tag) \
-            --push \
-            .
+          for tag in $TAGS; do
+            docker tag comic-safe-prod $tag
+            docker push $tag
+          done
