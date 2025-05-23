@@ -3,6 +3,7 @@
 
 NUXT_APP_DIR = comic-safe
 DOCKER_DEV_IMAGE = comic-safe-dev
+DOCKER_PROD_IMAGE = comic-safe-prod
 DOCKER_DEV_CONTAINER = comic-safe-dev-test
 
 init:
@@ -18,7 +19,7 @@ build/dev:
 	docker compose build
 
 build/prod:
-	docker build -t comic-safe-prod --target=prod comic-safe
+	docker build -t $(DOCKER_PROD_IMAGE) --target=prod comic-safe
 
 exec: build
 	docker run --rm -it \
@@ -46,6 +47,8 @@ npx: build
 
 clean:
 	docker compose down -v
+	docker rmi $(DOCKER_DEV_IMAGE)
+	docker rmi $(DOCKER_PROD_IMAGE)
 
 down:
 	docker compose down
@@ -71,5 +74,5 @@ logs:
 run/dev:
 	docker compose up
 
-run/prod:
+run/prod: build/prod
 	docker run --rm -it -p 3000:3000 comic-safe-prod
