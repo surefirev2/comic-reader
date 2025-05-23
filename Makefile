@@ -1,9 +1,10 @@
 # Makefile
 .PHONY: init run-pre-commit build exec dev npm npx test test/smoke test/e2e test/e2e/headless clean down up logs
 
-NUXT_APP_DIR = comic-safe
-DOCKER_DEV_IMAGE = comic-safe-dev
-DOCKER_DEV_CONTAINER = comic-safe-dev-test
+NUXT_APP_DIR ?= comic-safe
+DOCKER_DEV_IMAGE ?= comic-safe-dev
+DOCKER_PROD_IMAGE ?= comic-safe-prod
+DOCKER_DEV_CONTAINER ?= comic-safe-dev-test
 
 init:
 	pre-commit install
@@ -11,8 +12,14 @@ init:
 run-pre-commit:
 	pre-commit run --all-files
 
-build:
-	docker build -t $(DOCKER_DEV_IMAGE) $(NUXT_APP_DIR)
+# --- Build Targets ---
+build: build/dev
+
+build/dev:
+	docker compose build
+
+build/prod:
+	docker build -t $(DOCKER_PROD_IMAGE) --target=prod comic-safe
 
 exec: build
 	docker run --rm -it \
@@ -40,6 +47,8 @@ npx: build
 
 clean:
 	docker compose down -v
+	docker rmi $(DOCKER_DEV_IMAGE)
+	docker rmi $(DOCKER_PROD_IMAGE)
 
 down:
 	docker compose down
@@ -60,3 +69,10 @@ test/e2e/headless:
 
 logs:
 	docker compose logs -f nuxtapp
+
+# --- Run Targets ---
+run/dev:
+	docker compose up
+
+run/prod: build/prod
+	docker run --rm -it -p 3000:3000 $(DOCKER_PROD_IMAGE)

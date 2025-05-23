@@ -20,6 +20,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { onMounted, onUnmounted } from 'vue'
 const route = useRoute()
 const slug = route.params.slug
 const issue = route.params.issue
@@ -40,6 +41,21 @@ function prevPage() {
 function nextPage() {
   if (images.value && currentIndex.value < images.value.length - 1) currentIndex.value++
 }
+
+function handleKeydown(e) {
+  if (e.key === 'ArrowRight') {
+    nextPage()
+  } else if (e.key === 'ArrowLeft') {
+    prevPage()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <style>
