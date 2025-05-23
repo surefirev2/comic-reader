@@ -1,10 +1,10 @@
 # Makefile
 .PHONY: init run-pre-commit build exec dev npm npx test test/smoke test/e2e test/e2e/headless clean down up logs
 
-NUXT_APP_DIR = comic-safe
-DOCKER_DEV_IMAGE = comic-safe-dev
-DOCKER_PROD_IMAGE = comic-safe-prod
-DOCKER_DEV_CONTAINER = comic-safe-dev-test
+NUXT_APP_DIR ?= comic-safe
+DOCKER_DEV_IMAGE ?= comic-safe-dev
+DOCKER_PROD_IMAGE ?= comic-safe-prod
+DOCKER_DEV_CONTAINER ?= comic-safe-dev-test
 
 init:
 	pre-commit install
@@ -75,4 +75,4 @@ run/dev:
 	docker compose up
 
 run/prod: build/prod
-	docker run --rm -it -p 3000:3000 comic-safe-prod
+	docker run --rm -it -p 3000:3000 $(DOCKER_PROD_IMAGE)
