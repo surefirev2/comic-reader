@@ -11,8 +11,14 @@ init:
 run-pre-commit:
 	pre-commit run --all-files
 
-build:
-	docker build -t $(DOCKER_DEV_IMAGE) $(NUXT_APP_DIR)
+# --- Build Targets ---
+build: build/dev
+
+build/dev:
+	docker compose build
+
+build/prod:
+	docker build -t comic-safe-prod --target=prod comic-safe
 
 exec: build
 	docker run --rm -it \
@@ -60,3 +66,10 @@ test/e2e/headless:
 
 logs:
 	docker compose logs -f nuxtapp
+
+# --- Run Targets ---
+run/dev:
+	docker compose up
+
+run/prod:
+	docker run --rm -it -p 3000:3000 comic-safe-prod

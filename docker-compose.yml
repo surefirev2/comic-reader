@@ -4,15 +4,16 @@ services:
     build:
       context: ./comic-safe
       dockerfile: Dockerfile
+      target: dev
     container_name: comic-safe-dev-test
     image: comic-safe-dev
     ports:
       - "3000:3000"
+    environment: {}
+    working_dir: /app
     volumes:
       - ./comic-safe:/app
       - nuxt_node_modules:/app/node_modules
-    environment: {}
-    working_dir: /app
     command: npx nuxt dev
 volumes:
   nuxt_node_modules:
